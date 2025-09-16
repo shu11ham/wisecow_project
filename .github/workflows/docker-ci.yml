@@ -3,22 +3,29 @@ name: CI - Build and Push Wisecow Docker Image
 on:
   push:
     branches: ["main"]
+  pull_request:
+    branches: ["main"]
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+
     steps:
+      # Step 1: Checkout repository
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Step 2: Log in to Docker Hub using secrets
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      # Step 3: Build Docker image from root folder
       - name: Build Docker image
-        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/wisecow:latest ./wisecow
+        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/wisecow:latest .
 
+      # Step 4: Push Docker image to Docker Hub
       - name: Push Docker image
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/wisecow:latest
